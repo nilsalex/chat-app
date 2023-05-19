@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <title>let's chat!</title>
+  <body>
+    <label for="log"></label>
+    <textarea id="log" cols="50" rows="10" readonly></textarea>
+    <form id="form">
+      <label for="message">Your message: </label>
+      <input type="text" id="message" />
+      <input type="submit" />
+    </form>
+    <script type="text/javascript">
+      const socket = new WebSocket("ws://192.168.178.31:8080/");
+      const messages = [];
+
+      function submit(event) {
+        event.preventDefault();
+
+        const message = document.getElementById("message").value;
+        messages.push(message);
+        socket.send(message);
+        const logText = document.getElementById("log").value;
+        document.getElementById("log").value =
+          logText + "    " + message + "\n";
+
+        document.getElementById("message").value = "";
+
+        return false;
+      }
+
+      const form = document.getElementById("form");
+      form.addEventListener("submit", submit);
+
+      socket.onmessage = (event) => {
+        const logText = document.getElementById("log").value;
+        document.getElementById("log").value = logText + event.data + "\n";
+      };
+    </script>
+  </body>
+</html>
